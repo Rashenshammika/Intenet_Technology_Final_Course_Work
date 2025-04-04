@@ -10,11 +10,11 @@
     background-attachment: fixed;
    background-size: 100% ;
     font-family: Arial, sans-serif;
-    text-align: center; /* Center aligns the table */
+    text-align: center; 
 }
 table {
     width: 70%;
-    margin: 0 auto; /* Centers the table horizontally */
+    margin: 0 auto; 
     border-collapse: collapse;
 }
 th, td {
@@ -37,7 +37,7 @@ button {
     cursor: pointer;
 }
 button.delete {
-    background-color: #f44336; /* Red color for delete button */
+    background-color: #f44336; 
 }
 button:hover {
     background-color: #45a049;
@@ -94,7 +94,6 @@ button:hover {
           <td>Buffalo Burger</td>
           <td>1000</td>
         </tr>
-        <!-- Extra row for adding new burger -->
         <tr id="newBurgerRow">
           <td><input type="text" id="newBurgerName" placeholder="Enter Burger Name"></td>
           <td><input type="number" id="newBurgerPrice" placeholder="Enter Price"></td>
@@ -103,43 +102,32 @@ button:hover {
       <br><br>
 
 <script >
-    // Get references to elements
 const burgersTable = document.getElementById('burgersTable');
 const newBurgerNameInput = document.getElementById('newBurgerName');
 const newBurgerPriceInput = document.getElementById('newBurgerPrice');
 
-// Function to add a new burger row to the table
 function addNewBurger() {
-    // Get input values
     const newBurgerName = newBurgerNameInput.value.trim();
     const newBurgerPrice = parseInt(newBurgerPriceInput.value.trim());
 
-    // Validate inputs
     if (newBurgerName === '' || isNaN(newBurgerPrice) || newBurgerPrice <= 0) {
         alert('Please enter valid burger name and price.');
         return;
     }
 
-    // Create a new row
     const newRow = document.createElement('tr');
     newRow.innerHTML = `
         <td>${newBurgerName}</td>
         <td>${newBurgerPrice}</td>
     `;
 
-    // Append the new row to the table
     burgersTable.appendChild(newRow);
 
-    // Clear input fields
     newBurgerNameInput.value = '';
     newBurgerPriceInput.value = '';
 
-    // Optionally, you may want to save the new burger to a database or local storage
 }
 
-// Example event listener for adding a new burger
-// This can be triggered by a button click or form submit event
-// For simplicity, let's assume a button click
 const addButton = document.createElement('button');
 addButton.textContent = 'Add Burger';
 addButton.onclick = addNewBurger;

@@ -6,12 +6,7 @@
     <title>Login Form</title>
     <style>
         body {
-    /* font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0; */
-    
    background-image: url(img/d.jpg);
-   
    background-attachment: fixed;
    background-size: 100% ;
   }
@@ -29,9 +24,9 @@
         
         .right {
             flex: 1;
-            padding: 20px; /* Adjust padding as needed */
+            padding: 20px; 
             text-align: center;
-            color: #fff; /* Sets text color to white */
+            color: #fff; 
         }
         
         input[type="text"], input[type="password"] {
@@ -82,7 +77,6 @@
 <body>
     <div class="container">
         <div class="left">
-            <!-- Placeholder for any content on the left side -->
         </div>
         <div class="right">
             <div class="button-container">
@@ -93,7 +87,6 @@
                     <input type="password" id="password" name="password" placeholder="Enter password" required><br>   
                     <button type="button" onclick="location.href='3staff.html'"><b>LOGIN</b></button>
                 </form>
-                <!-- Add more buttons as needed -->
             </div>
         </div>
     </div>
@@ -103,10 +96,8 @@
             var username = document.getElementById("username").value;
             var password = document.getElementById("password").value;
 
-            // Example validation (replace with actual authentication logic)
             if (username === "admin" && password === "password") {
                 alert("Login successful!");
-                // Redirect to another page upon successful login
                 window.location.href = "3_staff.html";
             } else {
                 alert("Invalid username or password. Please try again.");
