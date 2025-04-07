@@ -3,142 +3,114 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Burgers Table</title>
+<title>Bill</title>
 <style>
 body {
-    background-image: url(img/.jpg);
+    background-image: url(img/bg.jpg);
+    background-size: 100%;
     font-family: Arial, sans-serif;
-    text-align: center; 
+    background-color: #f4f4f4;
+    color: #333;
+    text-align: center;
+}
+.container {
+    margin: 20px auto;
+    width: 80%;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 table {
-    width: 70%;
-    margin: 0 auto; 
+    width: 100%;
+    margin: 20px 0;
     border-collapse: collapse;
+    background: white;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 th, td {
-    padding: 8px;
+    padding: 10px;
+    border: 1px solid #ddd;
     text-align: left;
-    border-bottom: 1px solid #ddd;
 }
 th {
-    background-color: #f2f2f2;
-}
-tr:hover {
-    background-color: #f5f5f5;
+    background-color: #f4f4f4;
 }
 button {
-    padding: 6px 12px;
-    font-size: 14px;
-    border: none;
-    background-color: #4CAF50;
+    margin: 10px;
+    padding: 10px 20px;
+    background-color: rgb(216, 112, 0);
     color: white;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
 }
-button.delete {
-    background-color: #f44336; 
-}
 button:hover {
-    background-color: #45a049;
+    background-color: #1e7721;
 }
 </style>
 </head>
-<body><br>
-
-    <div class="input-field">
-        <label for="customerName">Customer Name:</label>
-        <input type="text" id="customerName" placeholder="Enter your name">
-    </div><br>
-
-    <table id="burgersTable">
-        <tr>
-          <th>Burgers</th>
-          <th>Ad</th>
-          <th>Del</th>
-          <th>Count</th>
-          <th>Price</th>
-          <th>Tt</th> 
-        </tr>
-        
-      </table>
-      <br><br>
-      <button onclick="order()">ORDER</button>
-      <p id="orderSummary"></p>
-      <p id="totalLabel">Total Order Value: 0</p>
-      <button type="button" onclick="location.href='Burgers Table.html'"><b>Go to Burgers Table</b></button>
+<body>
+<div class="container">
+    <h1>Bill</h1>
+    <p><strong>Customer Name:</strong> <span id="customerName"></span></p>
+    <p><strong>Bill Code:</strong> <span id="billCode"></span></p>
+    <h2>Order Summary</h2>
+    <table id="orderSummaryTable">
+        <thead>
+        </thead>
+        <tbody id="orderSummaryBody">
+        </tbody>
+    </table>
+    <p><strong>Total Order Value:</strong> <span id="totalLabel"></span></p>
+    <button onclick="goBack()">Go Back</button>
+    <button onclick="saveBill()">Save Bill</button>
+</div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+
+function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+}
+
+function displayBillData() {
+    const customerName = decodeURIComponent(getQueryParam('name'));
+    const orderSummary = decodeURIComponent(getQueryParam('summary'));
+    const totalOrderValue = decodeURIComponent(getQueryParam('total'));
+
+    document.getElementById('customerName').textContent = customerName;
+    document.getElementById('orderSummaryBody').innerHTML = orderSummary;
+    document.getElementById('totalLabel').textContent = totalOrderValue;
+}
+
+function goBack() {
+    window.history.back();
+}
+
+function saveBill() {
+    const billCode = generateUniqueCode();
+    const orderSummaryHtml = new XMLSerializer().serializeToString(document.getElementById('orderSummaryTable'));
+
+    const billData = {
+        customerName: document.getElementById('customerName').textContent,
+        orderSummary: orderSummaryHtml,
+        totalOrderValue: document.getElementById('totalLabel').textContent,
+        code: billCode
+    };
+
+    localStorage.setItem(billCode, JSON.stringify(billData));
     
-    function addRowsFromStorage() {
-        var burgers = JSON.parse(localStorage.getItem('burgers')) || [];
-        var table = document.getElementById('burgersTable');
+    document.getElementById('billCode').textContent = billCode;
 
-        burgers.forEach(function(burger) {
-            var row = table.insertRow(-1); 
-            row.innerHTML = `
-                <td>${burger.name}</td>
-                <td><button onclick="countClick(this)">Ad</button></td>
-                <td><button class="delete" onclick="countDown(this)">Del</button></td>
-                <td>${burger.count}</td>
-                <td>${burger.price}</td>
-                <td>${burger.total}</td>
-            `;
-        });
-    }
+    alert('Bill saved with code: ' + billCode);
+}
 
-    addRowsFromStorage();
+function generateUniqueCode() {
+    return 'BILL-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+}
 
-    function order() {
-        var totalValue = 0;
-        var rows = document.querySelectorAll('#burgersTable tr');
-
-        rows.forEach(function(row, index) {
-            if (index !== 0) { 
-                var totalCell = row.cells[5]; 
-                totalValue += parseInt(totalCell.textContent);
-            }
-        });
-
-        document.getElementById("totalLabel").textContent = "Total Order Value: " + totalValue;
-    }
-
-    function countClick(button) {
-        var row = button.parentNode.parentNode;
-        var countCell = row.cells[3];
-        var totalCell = row.cells[5];
-        var count = parseInt(countCell.textContent);
-        var price = parseInt(row.cells[4].textContent);
-        countCell.textContent = count + 1;
-        totalCell.textContent = (count + 1) * price;
-
-        updateLocalStorage(row.rowIndex - 1, count + 1, (count + 1) * price);
-    }
-
-    function countDown(button) {
-        var row = button.parentNode.parentNode;
-        var countCell = row.cells[3];
-        var totalCell = row.cells[5];
-        var count = parseInt(countCell.textContent);
-        var price = parseInt(row.cells[4].textContent);
-
-        if (count > 0) {
-            countCell.textContent = count - 1;
-            totalCell.textContent = (count - 1) * price;
-
-            updateLocalStorage(row.rowIndex - 1, count - 1, (count - 1) * price);
-        } else {
-            alert("Count cannot be less than 0.");
-        }
-    }
-
-    function updateLocalStorage(index, count, total) {
-        var burgers = JSON.parse(localStorage.getItem('burgers')) || [];
-        burgers[index].count = count;
-        burgers[index].total = total;
-        localStorage.setItem('burgers', JSON.stringify(burgers));
-    }
-});
+window.onload = displayBillData;
 </script>
-
 </body>
 </html>
