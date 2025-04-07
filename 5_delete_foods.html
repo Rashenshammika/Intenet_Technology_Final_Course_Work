@@ -3,109 +3,140 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Burger Delete Table</title>
+<title>Original Burgers Table</title>
 <style>
-    body {
+body {
     background-image: url(img/bg.jpg);
     background-attachment: fixed;
-   background-size: 100% ;
+    background-size: 100%;
     font-family: Arial, sans-serif;
-    text-align: center; 
+    text-align: center;
 }
-    table {
-        width: 70%;
-        margin: 20px auto;
-        border-collapse: collapse;
-    }
-
-    th, td {
-        padding: 10px;
-        border: 1px solid #ddd;
-    }
-
-    th {
-        background-color: #f2f2f2;
-    }
-
-    .delete-button {
-        background-color: #f44336;
-        color: white;
-        border: none;
-        padding: 6px 12px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    .delete-button:hover {
-        background-color: #cc0000;
-    }
+table {
+    width: 70%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    background-color: black;
+    color: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+th, td {
+    padding: 8px;
+    text-align: left;
+}
+th {
+    background-color: rgb(200, 105, 4);
+}
+tr:hover {
+    background-color: #f5f5f5;
+    color: black;
+}
+button {
+    padding: 6px 12px;
+    font-size: 14px;
+    border: none;
+    background-color: #27982a;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+}
+button:hover {
+    background-color: #45a049;
+}
+.delete {
+    background-color: #f44336;
+}
+.delete:hover {
+    background-color: #e53935;
+}
+h2{
+    color: #f5f5f5;
+}
 </style>
 </head>
-<body>
+<body><br>
+    <h2>Delete Burger</h2><br>
+    <table id="burgersTable">
+        <thead>
+            <tr>
+                <th>Burgers</th>
+                <th>Price</th>
+                <th>Del</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
 
-<h2>Burger Delete Table</h2>
-
-<table id="burgerTable">
-    <thead>
-        <tr>
-            <th>Burger Name</th>
-            <th>Delete</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Cheeseburger</td>
-            <td><button class="delete-button" onclick="deleteBurger(this)">Delete</button></td>
-        </tr>
-        <tr>
-            <td>Hamburger</td>
-            <td><button class="delete-button" onclick="deleteBurger(this)">Delete</button></td>
-        </tr>
-        <tr>
-            <td>Veggie Burger</td>
-            <td><button class="delete-button" onclick="deleteBurger(this)">Delete</button></td>
-        </tr>
-        <tr>
-            <td>Chicken Burger</td>
-            <td><button class="delete-button" onclick="deleteBurger(this)">Delete</button></td>
-        </tr>
-        <tr>
-            <td>BBQ Burger</td>
-            <td><button class="delete-button" onclick="deleteBurger(this)">Delete</button></td>
-        </tr>
-        <tr>
-            <td>Mushroom Swiss Burger</td>
-            <td><button class="delete-button" onclick="deleteBurger(this)">Delete</button></td>
-        </tr>
-        <tr>
-            <td>Double Cheeseburger</td>
-            <td><button class="delete-button" onclick="deleteBurger(this)">Delete</button></td>
-        </tr>
-        <tr>
-            <td>Bacon Burger</td>
-            <td><button class="delete-button" onclick="deleteBurger(this)">Delete</button></td>
-        </tr>
-        <tr>
-            <td>Teriyaki Burger</td>
-            <td><button class="delete-button" onclick="deleteBurger(this)">Delete</button></td>
-        </tr>
-        <tr>
-            <td>Black Bean Burger</td>
-            <td><button class="delete-button" onclick="deleteBurger(this)">Delete</button></td>
-        </tr>
-        <tr>
-            <td>Buffalo Burger</td>
-            <td><button class="delete-button" onclick="deleteBurger(this)">Delete</button></td>
-        </tr>
-    </tbody>
-</table>
+    <br><br>
+  
+    <button onclick="goBack()"><b>BACK</b></button>
 
 <script>
-function deleteBurger(button) {
-    var row = button.parentNode.parentNode;
-    row.parentNode.removeChild(row); 
-}
-</script>
+function initializeOrderTable() {
+    const table = document.getElementById('burgersTable').getElementsByTagName('tbody')[0];
+    const storedBurgers = JSON.parse(localStorage.getItem('burgers')) || [];
 
+    storedBurgers.sort((a, b) => a.price - b.price);
+
+    storedBurgers.forEach(burger => {
+        const row = table.insertRow();
+        row.insertCell(0).textContent = burger.name;
+        row.insertCell(1).textContent = burger.price; 
+        row.insertCell(2).innerHTML = `<button class="delete" onclick="deleteRow(this)">Del</button>`;
+    });
+}
+
+function deleteRow(button) {
+    const row = button.parentNode.parentNode; 
+    row.parentNode.removeChild(row); 
+
+    updateLocalStorage();
+}
+
+function updateLocalStorage() {
+    const table = document.getElementById('burgersTable').getElementsByTagName('tbody')[0];
+    const rows = table.getElementsByTagName('tr');
+    const updatedBurgers = [];
+
+    for (let i = 0; i < rows.length; i++) {
+        const cells = rows[i].getElementsByTagName('td');
+        const burgerName = cells[0].textContent;
+        const price = cells[1].textContent; 
+
+        if (burgerName && price) {
+            updatedBurgers.push({ name: burgerName, price: parseInt(price, 10) });
+        }
+    }
+
+    localStorage.setItem('burgers', JSON.stringify(updatedBurgers));
+}
+
+function redirectToCopiedTablePage() {
+    const table = document.getElementById('burgersTable').getElementsByTagName('tbody')[0];
+    const rows = table.getElementsByTagName('tr');
+    const copiedBurgers = [];
+
+    for (let i = 0; i < rows.length; i++) {
+        const cells = rows[i].getElementsByTagName('td');
+        const burgerName = cells[0].textContent;
+        const price = cells[1].textContent; 
+
+        if (burgerName && price) {
+            copiedBurgers.push({ name: burgerName, price: parseInt(price, 10) });
+        }
+    }
+
+    localStorage.setItem('copiedBurgers', JSON.stringify(copiedBurgers));
+    window.location.href = 'copiedTable.html';
+}
+
+function goBack() {
+    window.location.href = '3staff.html';
+}
+
+document.addEventListener('DOMContentLoaded', initializeOrderTable);
+</script>
 </body>
 </html>
