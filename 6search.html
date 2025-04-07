@@ -3,75 +3,151 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Search Example</title>
+<title>Bill</title>
 <style>
 body {
     background-image: url(img/bg.jpg);
     background-attachment: fixed;
     background-size: 100%;
     font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
     text-align: center;
 }
-
-.label {
-    font-size: 18px;
-    margin-bottom: 10px;
+.container {
+    margin: 20px auto;
+    width: 80%;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
-
-.input-field {
-    margin-bottom: 20px;
+table {
+    width: 100%;
+    margin: 20px 0;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
-
-.input-field input[type="text"] {
+th, td {
     padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 300px; 
-    box-sizing: border-box; 
-    transition: border-color 0.3s;
+    border: 1px solid #ddd;
+    text-align: left;
 }
-
-.input-field input[type="text"]:focus {
-    outline: none;
-    border-color: #4CAF50; 
+th {
+    background-color: #f4f4f4;
 }
-
-.button {
+button {
+    margin: 10px;
     padding: 10px 20px;
-    font-size: 16px;
-    background-color: #4CAF50;
+    background-color: rgb(205, 112, 13);
     color: white;
     border: none;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s;
 }
-
-.button:hover {
-    background-color: #45a049;
+button:hover {
+    background-color: #1e7721;
+}
+input {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 300px; 
+    margin: 5px;
 }
 </style>
 </head>
 <body>
+<div class="container">
+    <h1>Bill</h1>
+    
+    <p><strong>Customer Name:</strong> <span id="customerName"></span></p>
+    <p><strong>Bill Code:</strong> <span id="billCode"></span></p>
+    
+    <h2>Order Summary</h2>
+    <table id="orderSummaryTable">
+        <thead>
 
-<div class="label">Enter your search query:</div>
-<div class="input-field">
-    <input type="text" id="searchInput" placeholder="Search term">
+        </thead>
+        <tbody id="orderSummaryBody">
+
+        </tbody>
+    </table>
+    <p><strong>Total Order Value:</strong> <span id="totalLabel"></span></p>
+    
+    <label for="searchInput">Enter Customer Name or Bill Code:</label>
+    <input type="text" id="searchInput" placeholder="Customer Name or Bill Code">
+    <button onclick="searchBill()">Search Bill</button>
+    
+    <button onclick="goBack()">Go Back</button>
 </div>
-<button class="button" onclick="search()">Search</button>
 
 <script>
-function search() {
-    var searchTerm = document.getElementById("searchInput").value.trim();
-    if (searchTerm === "") {
-        alert("Please enter a search term.");
+
+function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+}
+
+function displayBillData() {
+    const customerName = decodeURIComponent(getQueryParam('name'));
+    const orderSummary = decodeURIComponent(getQueryParam('summary'));
+    const totalOrderValue = decodeURIComponent(getQueryParam('total'));
+
+    document.getElementById('customerName').textContent = customerName;
+    document.getElementById('orderSummaryBody').innerHTML = orderSummary;
+    document.getElementById('totalLabel').textContent = totalOrderValue;
+}
+
+function goBack() {
+    window.history.back();
+}
+
+function searchBill() {
+    const searchInput = document.getElementById('searchInput').value.trim();
+    
+    if (!searchInput) {
+        alert('Please enter a customer name or bill code.');
         return;
     }
     
-    alert("Searching for: " + searchTerm);
-
+    let found = false;
+    
+    if (searchInput.startsWith('BILL-')) {
+        const billData = JSON.parse(localStorage.getItem(searchInput));
+        if (billData) {
+            displayBillDataFromData(billData);
+            found = true;
+        }
+    }
+    
+    if (!found) {
+        const allBills = Object.keys(localStorage).filter(key => key.startsWith('BILL-'));
+        for (const billCode of allBills) {
+            const billData = JSON.parse(localStorage.getItem(billCode));
+            if (billData.customerName === searchInput) {
+                displayBillDataFromData(billData);
+                found = true;
+                break;
+            }
+        }
+    }
+    
+    if (!found) {
+        alert('No bill found for the given customer name or bill code.');
+    }
 }
-</script>
 
+function displayBillDataFromData(billData) {
+    document.getElementById('customerName').textContent = billData.customerName;
+    document.getElementById('billCode').textContent = billData.code;
+    document.getElementById('orderSummaryBody').innerHTML = billData.orderSummary;
+    document.getElementById('totalLabel').textContent = billData.totalOrderValue;
+}
+
+window.onload = displayBillData;
+</script>
 </body>
 </html>
